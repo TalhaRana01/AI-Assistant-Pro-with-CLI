@@ -12,7 +12,7 @@ from typing import Any
 import anthropic
 from anthropic import AsyncAnthropic
 
-from base import (
+from .base import (
     APIConnectionError,
     AuthenticationError,
     BaseLLMProvider,

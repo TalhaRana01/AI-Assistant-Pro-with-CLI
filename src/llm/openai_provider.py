@@ -13,7 +13,7 @@ import openai
 import tiktoken
 from openai import AsyncOpenAI
 
-from base import (
+from .base import (
     APIConnectionError,
     AuthenticationError,
     BaseLLMProvider,
