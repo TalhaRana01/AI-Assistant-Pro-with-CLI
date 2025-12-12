@@ -16,7 +16,7 @@ from pydantic import ValidationError
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from config import Settings, get_settings
+from src.config import Settings, get_settings
 
 
 class TestSettings:
