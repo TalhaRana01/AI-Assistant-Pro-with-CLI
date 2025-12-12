@@ -1,8 +1,3 @@
-"""
-Anthropic (Claude) LLM Provider implementation.
-
-Ye file Anthropic API ko call karti hai with retry logic.
-"""
 
 from __future__ import annotations
 
@@ -22,13 +17,9 @@ from .base import (
 )
 
 
-class AnthropicProvider(BaseLLMProvider):
-    """
-    Anthropic (Claude) LLM provider implementation.
-    
-    Supports Claude models with async operations and retry logic.
-    """
 
+class AnthropicProvider(BaseLLMProvider):
+    
     def __init__(
         self,
         api_key: str,
@@ -37,16 +28,7 @@ class AnthropicProvider(BaseLLMProvider):
         max_tokens: int = 1000,
         max_retries: int = 3,
     ) -> None:
-        """
-        Initialize Anthropic provider.
-        
-        Args:
-            api_key: Anthropic API key
-            model: Model name (default: claude-3-5-haiku-20241022)
-            temperature: Sampling temperature
-            max_tokens: Maximum tokens in response
-            max_retries: Maximum retry attempts
-        """
+       
         super().__init__(api_key, model, temperature, max_tokens)
         self.max_retries = max_retries
         
@@ -59,23 +41,7 @@ class AnthropicProvider(BaseLLMProvider):
         temperature: float | None = None,
         max_tokens: int | None = None,
     ) -> LLMResponse:
-        """
-        Send chat completion request with retry logic.
-        
-        Args:
-            messages: List of message dictionaries
-            temperature: Override temperature (optional)
-            max_tokens: Override max_tokens (optional)
-            
-        Returns:
-            LLMResponse with generated content
-            
-        Raises:
-            APIConnectionError: Connection failed
-            RateLimitError: Rate limit exceeded
-            AuthenticationError: Invalid API key
-            InvalidRequestError: Invalid request
-        """
+       
         # Use provided values or defaults
         temp = temperature if temperature is not None else self.temperature
         max_tok = max_tokens if max_tokens is not None else self.max_tokens
@@ -148,28 +114,12 @@ class AnthropicProvider(BaseLLMProvider):
         raise APIConnectionError("Max retries exceeded")
 
     def count_tokens(self, text: str) -> int:
-        """
-        Count tokens in text (approximate for Anthropic).
-        
-        Anthropic doesn't provide a public tokenizer, so we approximate.
-        Rule of thumb: 1 token ≈ 4 characters
-        
-        Args:
-            text: Text to count tokens for
-            
-        Returns:
-            Approximate number of tokens
-        """
+       
         return len(text) // 4
 
     @staticmethod
     async def _wait_with_backoff(attempt: int) -> None:
-        """
-        Wait with exponential backoff.
-        
-        Args:
-            attempt: Current attempt number (0-indexed)
-        """
+     
         wait_time = 2 ** attempt  # 1, 2, 4, 8 seconds
         await asyncio.sleep(wait_time)
 
