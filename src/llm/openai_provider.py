@@ -1,17 +1,11 @@
-"""
-OpenAI LLM Provider implementation.
-
-Ye file OpenAI API ko call karti hai with retry logic.
-"""
-
 from __future__ import annotations
 
 import asyncio
 from typing import Any
-
 import openai
 import tiktoken
 from openai import AsyncOpenAI
+
 
 from .base import (
     APIConnectionError,
@@ -24,12 +18,7 @@ from .base import (
 
 
 class OpenAIProvider(BaseLLMProvider):
-    """
-    OpenAI LLM provider implementation.
     
-    Supports GPT models with async operations and retry logic.
-    """
-
     def __init__(
         self,
         api_key: str,
@@ -38,16 +27,7 @@ class OpenAIProvider(BaseLLMProvider):
         max_tokens: int = 1000,
         max_retries: int = 3,
     ) -> None:
-        """
-        Initialize OpenAI provider.
-        
-        Args:
-            api_key: OpenAI API key
-            model: Model name (default: gpt-4o-mini)
-            temperature: Sampling temperature
-            max_tokens: Maximum tokens in response
-            max_retries: Maximum retry attempts
-        """
+
         super().__init__(api_key, model, temperature, max_tokens)
         self.max_retries = max_retries
         
@@ -60,6 +40,7 @@ class OpenAIProvider(BaseLLMProvider):
         except KeyError:
             # Fallback to cl100k_base for unknown models
             self.encoding = tiktoken.get_encoding("cl100k_base")
+        
 
     async def chat(
         self,
@@ -67,23 +48,7 @@ class OpenAIProvider(BaseLLMProvider):
         temperature: float | None = None,
         max_tokens: int | None = None,
     ) -> LLMResponse:
-        """
-        Send chat completion request with retry logic.
-        
-        Args:
-            messages: List of message dictionaries
-            temperature: Override temperature (optional)
-            max_tokens: Override max_tokens (optional)
-            
-        Returns:
-            LLMResponse with generated content
-            
-        Raises:
-            APIConnectionError: Connection failed
-            RateLimitError: Rate limit exceeded
-            AuthenticationError: Invalid API key
-            InvalidRequestError: Invalid request
-        """
+    
         # Use provided values or defaults
         temp = temperature if temperature is not None else self.temperature
         max_tok = max_tokens if max_tokens is not None else self.max_tokens
@@ -142,15 +107,7 @@ class OpenAIProvider(BaseLLMProvider):
         raise APIConnectionError("Max retries exceeded")
 
     def count_tokens(self, text: str) -> int:
-        """
-        Count tokens in text using tiktoken.
         
-        Args:
-            text: Text to count tokens for
-            
-        Returns:
-            Number of tokens
-        """
         try:
             return len(self.encoding.encode(text))
         except Exception:
@@ -159,12 +116,7 @@ class OpenAIProvider(BaseLLMProvider):
 
     @staticmethod
     async def _wait_with_backoff(attempt: int) -> None:
-        """
-        Wait with exponential backoff.
-        
-        Args:
-            attempt: Current attempt number (0-indexed)
-        """
+      
         wait_time = 2 ** attempt  # 1, 2, 4, 8 seconds
         await asyncio.sleep(wait_time)
 
